@@ -13,7 +13,7 @@ var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
 // End Global Application Services
 
-Task.Run(() => worker.LoadDataPeriodically(default)); // Launch collecting data in background
+var _ = Task.Run(() => worker.LoadDataPeriodically(default)); // Launch collecting data in background
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

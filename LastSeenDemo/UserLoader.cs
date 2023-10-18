@@ -1,4 +1,6 @@
-using LastSeenDemo;
+﻿using LastSeenDemo;
+
+namespace LastSeenDemo;
 
 public class UserLoader
 {

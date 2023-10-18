@@ -1,22 +1,13 @@
-using LastSeenDemo;
+﻿using LastSeenDemo;
 
-public interface IOnlineDetector
-{
-    bool Detect(List<UserTimeSpan> data, DateTimeOffset date);
-    DateTimeOffset? GetClosestOnlineTime(List<UserTimeSpan> data, DateTimeOffset date);
-    int CountOnline(Dictionary<Guid, List<UserTimeSpan>> users, DateTimeOffset date);
-    double CalculateTotalTimeForUser(List<UserTimeSpan> value);
-    double CalculateTotalTimeForUser(List<UserTimeSpan> value, DateTimeOffset from, DateTimeOffset to);
-    double CalculateDailyAverageForUser(List<UserTimeSpan> user);
-    double CalculateWeeklyAverageForUser(List<UserTimeSpan> user);
-}
+namespace LastSeenDemo;
 
 public class OnlineDetector : IOnlineDetector
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     public OnlineDetector(IDateTimeProvider dateTimeProvider)
     {
-        _dateTimeProvider = dateTimeProvider;
+        this._dateTimeProvider = dateTimeProvider;
     }
 
     public bool Detect(List<UserTimeSpan> data, DateTimeOffset date)
@@ -137,55 +128,5 @@ public class OnlineDetector : IOnlineDetector
         }
 
         return totalTime / totalDays;
-    }
-}
-
-public class Predictor
-{
-    private readonly IOnlineDetector _detector;
-    public Predictor(IOnlineDetector detector)
-    {
-        _detector = detector;
-    }
-
-    public int PredictUsersOnline(Dictionary<Guid, List<UserTimeSpan>> allData, DateTimeOffset offset)
-    {
-        var minDate = allData.SelectMany(x => x.Value).Min(x => x.Login);
-
-        var counts = new List<int>();
-        while (offset > minDate)
-        {
-            var countOnline = _detector.CountOnline(allData, offset);
-            counts.Add(countOnline);
-            offset = offset.AddDays(-7);
-        }
-        return (int)Math.Round(counts.Average());
-    }
-
-    public double PredictUserOnline(List<UserTimeSpan> allData, DateTimeOffset offset)
-    {
-        if (allData.Count == 0)
-        {
-            return 0;
-        }
-        var firstLogin = allData.Min(x => x.Login);
-        int totalCount = 0,
-          wasOnlineCount = 0;
-        while (offset > firstLogin)
-        {
-            var wasOnline = _detector.Detect(allData, offset);
-            if (wasOnline)
-            {
-                wasOnlineCount++;
-            }
-            totalCount++;
-            offset = offset.AddDays(-7);
-        }
-
-        if (totalCount == 0)
-        {
-            return 0;
-        }
-        return (double)wasOnlineCount / totalCount;
     }
 }

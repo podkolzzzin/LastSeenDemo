@@ -6,14 +6,14 @@ namespace LastSeenDemo;
 public class Page
 {
     public int Total { get; set; }
-    public User[] Data { get; set; }
+    public User[] Data { get; set; } = Array.Empty<User>();
 }
 
 public class User
 {
     public Guid UserId { get; set; }
     public DateTimeOffset? LastSeenDate { get; set; }
-    public string Nickname { get; set; }
+    public string Nickname { get; set; } = "";
     public bool IsOnline { get; set; }
 }
 

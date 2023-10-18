@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using LastSeenDemo;
 
 // Global Application Services
@@ -13,7 +13,7 @@ var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
 // End Global Application Services
 
-Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
+var _ = Task.Run(() => worker.LoadDataPeriodically(default)); // Launch collecting data in background
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -27,8 +27,8 @@ app.MapGet("/", () => "Hello World!"); // Just Demo Endpoint
 app.MapGet("/version", () => new
 {
     Version = 1,
-    Assembly = Assembly.GetAssembly(typeof(Program)).Location,
-    Modified = File.GetLastWriteTime(Assembly.GetAssembly(typeof(Program)).Location)
+    Assembly = Assembly.GetAssembly(typeof(Program))!.Location,
+    Modified = File.GetLastWriteTime(Assembly.GetAssembly(typeof(Program))!.Location)
 });
 
 Setup2ndAssignmentsEndpoints();

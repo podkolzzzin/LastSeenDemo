@@ -8,7 +8,7 @@ using Xunit;
 
 public class OnlineDetectorTests
 {
-    private readonly OnlineDetector onlineDetector = new(new MockDateTimeProvider());
+    private readonly OnlineDetector _onlineDetector = new(new MockDateTimeProvider());
 
     [Fact]
     public void When_UserIsOnline_Should_ReturnTrue()
@@ -23,7 +23,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 15:00:00");
 
         // Act
-        var result = onlineDetector.Detect(data, date);
+        var result = _onlineDetector.Detect(data, date);
 
         // Assert
         Assert.True(result);
@@ -42,7 +42,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 13:00:00");
 
         // Act
-        var result = onlineDetector.Detect(data, date);
+        var result = _onlineDetector.Detect(data, date);
 
         // Assert
         Assert.False(result);
@@ -56,7 +56,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 15:00:00");
 
         // Act
-        var result = onlineDetector.Detect(data, date);
+        var result = _onlineDetector.Detect(data, date);
 
         // Assert
         Assert.False(result);
@@ -75,7 +75,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 15:00:00");
 
         // Act
-        var closestTime = onlineDetector.GetClosestOnlineTime(data, date);
+        var closestTime = _onlineDetector.GetClosestOnlineTime(data, date);
 
         // Assert
         Assert.Equal(DateTimeOffset.Parse("2022-01-01 14:00:00"), closestTime);
@@ -94,7 +94,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 11:00:00");
 
         // Act
-        var closestTime = onlineDetector.GetClosestOnlineTime(data, date);
+        var closestTime = _onlineDetector.GetClosestOnlineTime(data, date);
 
         // Assert
         Assert.Equal(DateTimeOffset.Parse("2022-01-01 10:00:00"), closestTime);
@@ -113,7 +113,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 17:00:00");
 
         // Act
-        var closestTime = onlineDetector.GetClosestOnlineTime(data, date);
+        var closestTime = _onlineDetector.GetClosestOnlineTime(data, date);
 
         // Assert
         Assert.Equal(DateTimeOffset.Parse("2022-01-01 18:00:00"), closestTime);
@@ -127,7 +127,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 15:00:00");
 
         // Act
-        var closestTime = onlineDetector.GetClosestOnlineTime(data, date);
+        var closestTime = _onlineDetector.GetClosestOnlineTime(data, date);
 
         // Assert
         Assert.Null(closestTime);
@@ -161,7 +161,7 @@ public class OnlineDetectorTests
         var date = DateTimeOffset.Parse("2022-01-01 15:00:00");
 
         // Act
-        var count = onlineDetector.CountOnline(users, date);
+        var count = _onlineDetector.CountOnline(users, date);
 
         // Assert
         Assert.Equal(2, count);
@@ -179,7 +179,7 @@ public class OnlineDetectorTests
     };
 
         // Act
-        var totalTime = onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
+        var totalTime = _onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
 
         // Assert
         Assert.Equal(21600, totalTime); // 6 hours * 60 minutes * 60 seconds = 21600 seconds
@@ -192,7 +192,7 @@ public class OnlineDetectorTests
         var userTimeSpans = new List<UserTimeSpan>();
 
         // Act
-        var totalTime = onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
+        var totalTime = _onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
 
         // Assert
         Assert.Equal(0, totalTime);
@@ -210,7 +210,7 @@ public class OnlineDetectorTests
     };
 
         // Act
-        var totalTime = onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
+        var totalTime = _onlineDetector.CalculateTotalTimeForUser(userTimeSpans);
 
         // Assert
         var expectedTotalTime = (MockDateTimeProvider.DefaultMockDate - DateTimeOffset.Parse("2022-01-01 10:00:00")).TotalSeconds +

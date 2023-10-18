@@ -1,4 +1,4 @@
-namespace LastSeenDemo;
+﻿namespace LastSeenDemo;
 
 public class AllUsersTransformer
 {

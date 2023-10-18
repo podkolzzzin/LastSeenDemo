@@ -1,4 +1,4 @@
-namespace LastSeenDemo.UnitTests;
+﻿namespace LastSeenDemo.UnitTests;
 
 public class StubUserTransformer : IUserTransformer
 {

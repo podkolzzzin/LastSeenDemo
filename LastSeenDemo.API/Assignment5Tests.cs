@@ -11,13 +11,18 @@ public class Assignment5Tests
     {
         Report report = new Report();
         Guid userId = Guid.NewGuid(); 
-        //int result = features.ReturnTotalTimeOnline(userId, new List<UserTimeSpan>());
-        var result = report.ReturnDesiredInfo(new List<string>() {"dailyAverage", "weeklyAverage", "total"}, new List<Guid>() {new Guid()});
-        //Assert.True();
-        List<string> specificList = result.Values.FirstOrDefault();
-
-        bool containsZero = specificList != null && specificList.Count > 0 && specificList[0].Contains(expected);
+        var result = report.ReturnDesiredInfo(new List<string>()
+        {
+            "dailyAverage",
+            "weeklyAverage",
+            "total",
+            "",
+            ""
+        }, new List<Guid>());
         
-        Assert.True(containsZero);
+         foreach (var item in result.Values)
+         {
+            Assert.Contains(expected, item);
+         }
     }
 }

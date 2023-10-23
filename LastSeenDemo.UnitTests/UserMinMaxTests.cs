@@ -1,4 +1,4 @@
-﻿using Mocks;
+using Mocks;
 using System;
 using System.Collections.Generic;
 using LastSeenDemo.UnitTests.Mocks;

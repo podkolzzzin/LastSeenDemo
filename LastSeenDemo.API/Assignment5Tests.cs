@@ -16,8 +16,8 @@ public class Assignment5Tests
             "dailyAverage",
             "weeklyAverage",
             "total",
-            "",
-            ""
+            "min",
+            "max"
         }, new List<Guid>());
         
          foreach (var item in result.Values)

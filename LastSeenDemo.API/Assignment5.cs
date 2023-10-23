@@ -1,14 +1,11 @@
 ﻿namespace LastSeenDemo;
 
+using System;
 public class Assignment5
 {
     
 }
 
-public class ReportPiece
-{
-    
-}
 
 public class Report
 {
@@ -51,16 +48,66 @@ public class Report
         }
         if (metrics.Contains("min"))
         {
-            foreach (var user in user_id_s)
+            List<int> mins = new List<int>();
+            foreach (var user_id in user_id_s)
             {
-                
+                var now = DateTimeOffset.Now;
+                //var min = useful_stuff_returner.ReturnTotalTimeOnline(user_id, new List<UserTimeSpan>());
+                int min = 0;
+                Loader loader = new Loader();
+                Worker worker = new Worker(new UserLoader(loader, ""), new AllUsersTransformer(new UserTransformer(new DateTimeProvider())));
+                if (worker.Users.ContainsKey(user_id))
+                {
+                    var uts = worker.Users[user_id];
+                    
+                    foreach (var ts in uts)
+                    {
+                        var tslogin = ts.Login;
+                        var tslogout = ts.Logout;
+
+                        if (tslogout.HasValue)
+                        {
+                            var difference = useful_stuff_returner.CountTotalTime(tslogout.Value, tslogin);
+                            if (difference>min)
+                            {
+                                min = difference;
+                            }
+                        }
+                    }
+                    mins.Add(min);
+                }
             }
         }
         if (metrics.Contains("max"))
         {
-            foreach (var user in user_id_s)
+            List<int> maxs = new List<int>();
+            foreach (var user_id in user_id_s)
             {
-                
+                var now = DateTimeOffset.Now;
+                //var min = useful_stuff_returner.ReturnTotalTimeOnline(user_id, new List<UserTimeSpan>());
+                int max = 0;
+                Loader loader = new Loader();
+                Worker worker = new Worker(new UserLoader(loader, ""), new AllUsersTransformer(new UserTransformer(new DateTimeProvider())));
+                if (worker.Users.ContainsKey(user_id))
+                {
+                    var uts = worker.Users[user_id];
+                    
+                    foreach (var ts in uts)
+                    {
+                        var tslogin = ts.Login;
+                        var tslogout = ts.Logout;
+
+                        if (tslogout.HasValue)
+                        {
+                            var difference = useful_stuff_returner.CountTotalTime(tslogout.Value, tslogin);
+                            if (difference>max)
+                            {
+                                max = difference;
+                            }
+                        }
+                    }
+                    maxs.Add(max);
+                }
             }
         }
 

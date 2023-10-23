@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using LastSeenDemo;
 
 // Global Application Services
@@ -11,6 +13,7 @@ var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
+var UserMinMax = new UserMinMax(detector);
 // End Global Application Services
 
 Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
@@ -125,6 +128,71 @@ void Setup4thAssignmentsEndpoints()
             return Results.NotFound(new { userId });
         worker.Forget(userId);
         return Results.Ok();
+    });
+}
+
+void Setup5thAssignmentsEndpoints()
+{
+    //Feature#1 - Implement reports functionality
+    app.MapPost("/api/report/statistics", async (HttpContext context) =>
+    {
+        using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+        {
+            var requestBody = await reader.ReadToEndAsync();
+            var reportRequest = JsonSerializer.Deserialize<ReportRequest>(requestBody);
+
+            if (reportRequest == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            var report = new Report("statistics", reportRequest.Users, reportRequest.Metrics, worker, detector);
+
+            if (report == null)
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(report));
+        }
+    });
+
+    var userGuids = new List<Guid>
+    {
+        new Guid("2fba2529-c166-8574-2da2-eac544d82634"),
+        new Guid("8b0b5db6-19d6-d777-575e-915c2a77959a"),
+        new Guid("e13412b2-fe46-7149-6593-e47043f39c91"),
+        new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
+        new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
+    };
+
+    app.MapGet("/api/report/statistics", (DateTimeOffset from, DateTimeOffset to) =>
+    {
+        var report = new List<Dictionary<string, object>>();
+
+        foreach (var userId in userGuids)
+        {
+            if (worker.Users.TryGetValue(userId, out var user))
+            {
+                var userReport = new Dictionary<string, object>
+                {
+                    { "UserId", userId }
+                };
+
+                userReport["Total"] = detector.CalculateTotalTimeForUser(user);
+                userReport["DailyAverage"] = detector.CalculateDailyAverageForUser(user);
+                userReport["WeeklyAverage"] = detector.CalculateWeeklyAverageForUser(user);
+                var (min, max) = UserMinMax.CalculateMinMax(user, from, to);
+                userReport["Min"] = min;
+                userReport["Max"] = max;
+                report.Add(userReport);
+            }
+        }
+        return Results.Json(report);
     });
 }
 

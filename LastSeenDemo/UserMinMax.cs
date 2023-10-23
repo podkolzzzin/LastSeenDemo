@@ -6,7 +6,7 @@ namespace LastSeenDemo
 {
     public class UserMinMax
     {
-        private readonly OnlineDetector _onlineDetector; 
+        private readonly OnlineDetector _onlineDetector;
         public UserMinMax(OnlineDetector onlineDetector)
         {
             _onlineDetector = onlineDetector;

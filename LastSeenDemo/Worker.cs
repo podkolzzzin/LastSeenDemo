@@ -40,4 +40,9 @@ public class Worker
         Users.Remove(userId);
         OnlineUsers.Remove(userId);
     }
+
+    public void Report()
+    {
+        //create code here
+    }
 }

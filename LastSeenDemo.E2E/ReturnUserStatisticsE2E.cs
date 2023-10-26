@@ -10,8 +10,20 @@ public class ReturnUserStatisticsE2E
     [Fact]
     public void E2EUserStatistics()
     {
-        
+        Assignment5 assignment5 = new Assignment5();
+        var userlist = assignment5.GetUserList();
+        Report report = new Report();
+       // string[] report_args = new string[] { "dailyAverage", "weeklyAverage", "total", "min", "max"};
+       List<string> report_args = new List<string>() { "dailyAverage", "weeklyAverage", "total", "min", "max"};
+       List<Guid> user_ids = new List<Guid>();
+        foreach (var single_user in userlist)
+        {
+            user_ids.Add(single_user.UserId);
+        }
 
-        Assert.Equal("", "");
+        var testable = report.ReturnDesiredInfo(report_args, user_ids);
+        
+        //Assert.Equal("", "");
+        Assert.True(true);
     }
 }

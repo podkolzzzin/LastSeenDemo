@@ -26,11 +26,14 @@ public class Assignment4Features
     }
 
     public WeeklyTime_and_DailyTime ReturnAverageTime(Guid user_id, List<UserTimeSpan> timeSpans)
-    {// ну і як це робити? Через while для кожної сесії, у яких день однаковий, а тоді з кроком 7?
+    {
+        // ну і як це робити? Через while для кожної сесії, у яких день однаковий, а тоді з кроком 7?
         // А!
         // total time ділю на кількість днів з першого входу
+    if(timeSpans.Count > 0)
+    {
         
-        int total_time_online_in_seconds = 0; 
+        int total_time_online_in_seconds = 0;
         foreach (var single_timespan in timeSpans)
         {
             if (single_timespan.Logout == null)
@@ -46,16 +49,21 @@ public class Assignment4Features
 
         var first_login = timeSpans[0].Login;
         var now = DateTimeOffset.Now;
-        
+
         TimeSpan difference = now - first_login;
 
         int days_since_first_login = difference.Days;
-      //  int weeks_since_first_login = days_since_first_login / 7;
+        //  int weeks_since_first_login = days_since_first_login / 7;
 
         int avg_daily_time = total_time_online_in_seconds / days_since_first_login;
         int avg_weekly_time = avg_daily_time * 7;
 
-        return new WeeklyTime_and_DailyTime( avg_weekly_time, avg_daily_time);
+        return new WeeklyTime_and_DailyTime(avg_weekly_time, avg_daily_time);
+    }
+    else
+    {
+        return new WeeklyTime_and_DailyTime(0, 0);
+    }
     }
 
     public void ForgetMe(Guid user_Id)

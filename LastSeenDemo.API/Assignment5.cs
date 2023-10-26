@@ -157,7 +157,7 @@ public class Report
             if (metrics.Contains("max"))
             {
                 var new_maximum = ReturnMax(user_id);
-                output[user_id][3] = new_maximum.ToString();
+                output[user_id][4] = new_maximum.ToString();
             }
         }
         return output;

@@ -1,5 +1,9 @@
 using System.Reflection;
+using System.Text;
 using LastSeenDemo;
+using System.Text.Json;
+
+
 
 // Global Application Services
 var dateTimeProvider = new DateTimeProvider();
@@ -11,6 +15,7 @@ var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
+// End Global Application Services
 // End Global Application Services
 
 Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
@@ -130,3 +135,57 @@ void Setup4thAssignmentsEndpoints()
 
 
 // ssh -i deploy_key root@lastseendemo.top
+void SetupReportsEndpoints(object reportRequest1)
+{
+    //Feature#1 - Implement reports functionality
+
+    // Endpoint to configure a report by its name
+    app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
+    {
+        using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+        {
+            var requestBody = await reader.ReadToEndAsync();
+            var reportRequest = JsonSerializer.Deserialize<ReportRequest>(requestBody);
+            if (reportRequest == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            // Store or handle report configuration using 'reportName', 'reportRequest.Users', and 'reportRequest.Metrics'
+            // This can be done by calling other services or saving it to a database
+
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new {}));
+        }
+    });
+
+    // Endpoint to retrieve a configured report by its name and date range
+    app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
+    {
+        var reportResponse = new List<object>();
+
+        // Retrieve or calculate report data using 'reportName', 'from', and 'to'
+        // This can be done by calling other services or fetching it from a database
+        // Here's a mock example:
+        foreach (var userId in Report.Users) // reportRequest might be retrieved based on the reportName
+        {
+            var userMetrics = new List<object>
+            {
+                new { dailyAverage = 1475 },
+                // Add other metrics calculations here
+            };
+
+            var userReport = new
+            {
+                userId,
+                metrics = userMetrics
+            };
+
+            reportResponse.Add(userReport);
+        }
+
+        return Results.Json(reportResponse);
+    });
+}

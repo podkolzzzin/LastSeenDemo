@@ -157,7 +157,7 @@ void SetupReportsEndpoints(object reportRequest1)
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new {}));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new{}));
         }
     });
 

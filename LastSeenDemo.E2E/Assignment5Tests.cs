@@ -1,13 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using Xunit;
-
 namespace LastSeenDemo;
+
 
 public class Assignment5Tests
 {
-    [Theory]
-    [InlineData("0")]
-    public void ReturnTotalTimeOnline(string expected)
+    [Fact]
+    public void ReturnUserStatistics()
     {
         Report report = new Report();
         Guid userId = Guid.NewGuid(); 
@@ -22,7 +21,7 @@ public class Assignment5Tests
         //change
          foreach (var item in result.Values)
          {
-            Assert.Contains(expected, item);
+            Assert.Contains("0", item);
          }
     }
 }

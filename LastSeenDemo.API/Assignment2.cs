@@ -9,7 +9,7 @@ public class Assignment2
 
 
 
-class Assignment2Features
+public class Assignment2Features
 {
     DateTime dtn = DateTime.Now;
     string now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");

@@ -22,5 +22,3 @@ public class ReportManagementTests
         Assert.Equal(initialCount + 1, reportManagement.Reports.Count);
     }
 }
-
-

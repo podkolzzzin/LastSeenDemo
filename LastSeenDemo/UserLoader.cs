@@ -1,4 +1,4 @@
-using LastSeenDemo;
+﻿using LastSeenDemo;
 
 public class UserLoader
 {

@@ -1,4 +1,4 @@
-using LastSeenDemo.IntegrationTest.Mocks;
+﻿using LastSeenDemo.IntegrationTest.Mocks;
 
 namespace LastSeenDemo.IntegrationTest;
 

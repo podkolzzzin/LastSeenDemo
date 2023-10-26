@@ -3,7 +3,7 @@ using Xunit;
 namespace LastSeenDemo;
 
 
-public class Assignment5Tests
+public class ReturnUserStatisticsIntegration
 {
     [Fact]
     public void ReturnUserStatistics()

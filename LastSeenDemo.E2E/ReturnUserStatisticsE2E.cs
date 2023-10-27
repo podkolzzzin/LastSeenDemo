@@ -25,5 +25,10 @@ public class ReturnUserStatisticsE2E
         
         //Assert.Equal("", "");
         Assert.True(true);
+        Assert.Equal("0", testable[new Guid("a69de642-dd03-ba60-2241-9952b57463ef")][0]);
+        Assert.Equal("0", testable[new Guid("a69de642-dd03-ba60-2241-9952b57463ef")][1]);
+        Assert.Equal("0", testable[new Guid("a69de642-dd03-ba60-2241-9952b57463ef")][2]);
+        Assert.Equal("0", testable[new Guid("a69de642-dd03-ba60-2241-9952b57463ef")][3]);
+        Assert.Equal("0", testable[new Guid("a69de642-dd03-ba60-2241-9952b57463ef")][4]);
     }
 }

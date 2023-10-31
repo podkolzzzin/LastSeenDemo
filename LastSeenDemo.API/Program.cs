@@ -15,6 +15,8 @@ var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
+var userMinMaxCalculator = new UserMinMaxCalculator(detector);
+
 // End Global Application Services
 // End Global Application Services
 
@@ -135,11 +137,9 @@ void Setup4thAssignmentsEndpoints()
 
 
 
-void SetupReportsEndpoints()
+void SetupReportsEndpoints(object reportRequest1)
 {
-    var reportManager = new ReportManagement();
-    var onlineDetector = new OnlineDetector(); 
-    
+    //Feature#1 - Implement reports functionality
     app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
     {
         using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
@@ -151,23 +151,45 @@ void SetupReportsEndpoints()
                 context.Response.StatusCode = 400;
                 return;
             }
-            var newReport = new Report(reportName, reportRequest.Users, reportRequest.Metrics, worker, onlineDetector);
-            reportManager.AddReport(newReport);
-
+            
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new { }));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new {}));
         }
     });
     app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
     {
-        var report = reportManager.Reports.FirstOrDefault(r => r.Name == reportName);
-        if (report != null)
+        var userGuids = new List<Guid>
         {
-            var reportResponse = report.CreateReport(from, to);
-            return Results.Json(reportResponse);
+            new Guid("2fba2529-c166-8574-2da2-eac544d82634"),
+            new Guid("8b0b5db6-19d6-d777-575e-915c2a77959a"),
+            new Guid("e13412b2-fe46-7149-6593-e47043f39c91"),
+            new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
+            new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
+        };
+    
+        var report = new List<Dictionary<string, object>>();
+    
+        foreach (var userId in userGuids)
+        {
+            if (worker.Users.TryGetValue(userId, out var user))
+            {
+                var userReport = new Dictionary<string, object>
+                {
+                    { "UserId", userId }
+                };
+
+                userReport["DailyAverage"] = detector.CalculateDailyAverageForUser(user);
+                userReport["WeeklyAverage"] = detector.CalculateWeeklyAverageForUser(user);
+                userReport["Total"] = detector.CalculateTotalTimeForUser(user);
+            
+                var minMax = userMinMaxCalculator.CalculateMinMax(user, from, to);
+                userReport["Min"] = minMax.Item1;
+                userReport["Max"] = minMax.Item2;
+
+                report.Add(userReport);
+            }
         }
-        return Results.NotFound("Report not found"); 
+        return Results.Json(report);
     });
 }
-

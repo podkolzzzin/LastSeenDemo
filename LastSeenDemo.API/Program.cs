@@ -139,7 +139,7 @@ void Setup4thAssignmentsEndpoints()
 
 void SetupReportsEndpoints(object reportRequest1)
 {
-    //Feature#1 - Implement reports functionality
+    // Feature#1 - Implement reports functionality
     app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
     {
         using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
@@ -147,15 +147,16 @@ void SetupReportsEndpoints(object reportRequest1)
             var requestBody = await reader.ReadToEndAsync();
             var reportRequest = JsonSerializer.Deserialize<ReportRequest>(requestBody);
             if (reportRequest == null)
-            {  
+            {
                 context.Response.StatusCode = 400;
                 return;
             }
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new{ }));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { }));
         }
     });
+
     app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
     {
         var userGuids = new List<Guid>
@@ -166,7 +167,10 @@ void SetupReportsEndpoints(object reportRequest1)
             new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
             new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
         };
-        var report = new List<Dictionary<string, object>>(); foreach(var userId in userGuids)
+
+        var report = new List<Dictionary<string, object>>();
+
+        foreach (var userId in userGuids)
         {
             if (worker.Users.TryGetValue(userId, out var user))
             {
@@ -185,6 +189,7 @@ void SetupReportsEndpoints(object reportRequest1)
                 report.Add(userReport);
             }
         }
+
         return Results.Json(report);
     });
 }

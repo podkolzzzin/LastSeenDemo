@@ -139,8 +139,6 @@ void SetupReportsEndpoints()
 {
     var reportManager = new ReportManagement();
     var onlineDetector = new OnlineDetector(); 
-    var worker = new Worker(); 
-
     
     app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
     {

@@ -134,12 +134,14 @@ void Setup4thAssignmentsEndpoints()
 }
 
 
-// ssh -i deploy_key root@lastseendemo.top
-void SetupReportsEndpoints(object reportRequest1)
-{
-    //Feature#1 - Implement reports functionality
 
-    // Endpoint to configure a report by its name
+void SetupReportsEndpoints()
+{
+    var reportManager = new ReportManagement();
+    var onlineDetector = new OnlineDetector(); 
+    var worker = new Worker(); 
+
+    
     app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
     {
         using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
@@ -151,41 +153,23 @@ void SetupReportsEndpoints(object reportRequest1)
                 context.Response.StatusCode = 400;
                 return;
             }
-
-            // Store or handle report configuration using 'reportName', 'reportRequest.Users', and 'reportRequest.Metrics'
-            // This can be done by calling other services or saving it to a database
+            var newReport = new Report(reportName, reportRequest.Users, reportRequest.Metrics, worker, onlineDetector);
+            reportManager.AddReport(newReport);
 
             context.Response.StatusCode = 200;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonSerializer.Serialize(new { }));
         }
     });
-
-    // Endpoint to retrieve a configured report by its name and date range
     app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
     {
-        var reportResponse = new List<object>();
-
-        // Retrieve or calculate report data using 'reportName', 'from', and 'to'
-        // This can be done by calling other services or fetching it from a database
-        // Here's a mock example:
-        foreach (var userId in Report.Users) // reportRequest might be retrieved based on the reportName
+        var report = reportManager.Reports.FirstOrDefault(r => r.Name == reportName);
+        if (report != null)
         {
-            var userMetrics = new List<object>
-            {
-                new { dailyAverage = 1475 },
-                // Add other metrics calculations here
-            };
-
-            var userReport = new
-            {
-                userId,
-                metrics = userMetrics
-            };
-
-            reportResponse.Add(userReport);
+            var reportResponse = report.CreateReport(from, to);
+            return Results.Json(reportResponse);
         }
-
-        return Results.Json(reportResponse);
+        return Results.NotFound("Report not found"); 
     });
 }
+

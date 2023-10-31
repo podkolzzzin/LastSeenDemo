@@ -166,8 +166,8 @@ void SetupReportsEndpoints(object reportRequest1)
             new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
             new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
         };
-        var report = new List<Dictionary<string, object>>();
-        foreach(var userId in userGuids)
+        var report = new List<Dictionary<string, object>>(); 
+        foreach( var userId in userGuids)
         {
             if (worker.Users.TryGetValue(userId, out var user))
             {
@@ -179,7 +179,6 @@ void SetupReportsEndpoints(object reportRequest1)
                 userReport["DailyAverage"] = detector.CalculateDailyAverageForUser(user);
                 userReport["WeeklyAverage"] = detector.CalculateWeeklyAverageForUser(user);
                 userReport["Total"] = detector.CalculateTotalTimeForUser(user);
-            
                 var minMax = userMinMaxCalculator.CalculateMinMax(user, from, to);
                 userReport["Min"] = minMax.Item1;
                 userReport["Max"] = minMax.Item2;

@@ -10,9 +10,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+        <PackageReference Include="Mock" Version="1.0.0" />
+        <PackageReference Include="Mocks" Version="1.0.0" />
         <PackageReference Include="Moq" Version="4.20.69" />
-        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -24,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LastSeenDemo.API\LastSeenDemo.API.csproj" />
       <ProjectReference Include="..\LastSeenDemo\LastSeenDemo.csproj" />
     </ItemGroup>
 

@@ -1,6 +1,8 @@
 ﻿using System.Net;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 
 namespace LastSeenDemo.E2E;
 
@@ -28,4 +30,6 @@ public class StatsApiTests
         Assert.Equal(JTokenType.Boolean, result.Property("wasUserOnline").Value.Type);
         Assert.NotNull(result.Property("nearestOnlineTime"));
     }
+
 }
+

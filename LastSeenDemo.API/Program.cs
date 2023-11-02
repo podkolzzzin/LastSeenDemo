@@ -1,5 +1,9 @@
-using System.Reflection;
+﻿using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using LastSeenDemo;
+
+
 
 // Global Application Services
 var dateTimeProvider = new DateTimeProvider();
@@ -11,6 +15,9 @@ var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
+var userMinMaxCalculator = new UserMinMaxCalculator(detector);
+
+// End Global Application Services
 // End Global Application Services
 
 Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
@@ -129,4 +136,97 @@ void Setup4thAssignmentsEndpoints()
 }
 
 
-// ssh -i deploy_key root@lastseendemo.top
+
+void SetupReportsEndpoints(object reportRequest1)
+{
+    // Feature#1 - Implement reports functionality
+    app.MapPost("/api/report/{reportName}", async (HttpContext context, string reportName) =>
+    {
+        using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+        {
+            var requestBody = await reader.ReadToEndAsync();
+            var reportRequest = JsonSerializer.Deserialize<ReportRequest>(requestBody);
+            if (reportRequest == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { }));
+        }
+    });
+    var userGuids = new List<Guid>
+    {
+        new Guid("2fba2529-c166-8574-2da2-eac544d82634"),
+        new Guid("8b0b5db6-19d6-d777-575e-915c2a77959a"),
+        new Guid("e13412b2-fe46-7149-6593-e47043f39c91"),
+        new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
+        new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
+    };
+    app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
+{
+    var userReports = new List<object>();
+    var globalDailyAverages = new List<double>();
+    var globalWeeklyAverages = new List<double>();
+    var globalTotals = new List<double>();
+    var globalMins = new List<double>();
+    var globalMaxs = new List<double>();
+    foreach (var userId in userGuids)
+    {
+        if (worker.Users.TryGetValue(userId, out var user))
+        {
+            var dailyAverage = detector.CalculateDailyAverageForUser(user);
+            var weeklyAverage = detector.CalculateWeeklyAverageForUser(user);
+            var total = detector.CalculateTotalTimeForUser(user);
+            var minMax = userMinMaxCalculator.CalculateMinMax(user, from, to);
+
+            userReports.Add(new
+            {
+                userId = userId,
+                metrics = new List<object>
+                {
+                    new { dailyAverage = dailyAverage },
+                    new { weeklyAverage = weeklyAverage },
+                    new { total = total },
+                    new { min = minMax.Item1 },
+                    new { max = minMax.Item2 }
+                }
+            });
+            globalDailyAverages.Add(dailyAverage);
+            globalWeeklyAverages.Add(weeklyAverage);
+            globalTotals.Add(total);
+            globalMins.Add(minMax.Item1);
+            globalMaxs.Add(minMax.Item2);
+        }
+    }
+    var globalMetrics = new
+    {
+        dailyAverage = globalDailyAverages.Any() ? globalDailyAverages.Average() : 0,
+        weeklyAverage = globalWeeklyAverages.Any() ? globalWeeklyAverages.Average() : 0,
+        total = globalTotals.Sum(),
+        min = globalMins.Any() ? globalMins.Min() : 0,
+        max = globalMaxs.Any() ? globalMaxs.Max() : 0
+    };
+
+    // Construct the final response
+    var reportResponse = new
+    {
+        users = userReports,
+        globalMetrics = globalMetrics
+    };
+
+    return Results.Json(reportResponse);
+});
+
+
+
+    void FinalSetUpEndpoints()
+    {
+        
+    }
+    
+    
+    
+    
+}

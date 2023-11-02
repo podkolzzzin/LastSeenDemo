@@ -1,4 +1,4 @@
-namespace LastSeenDemo.UnitTests;
+﻿namespace LastSeenDemo.UnitTests;
 
 /*
  * User Is Online -> Online

@@ -1,4 +1,4 @@
-using LastSeenDemo;
+﻿using LastSeenDemo;
 
 public interface IOnlineDetector
 {
@@ -17,6 +17,11 @@ public class OnlineDetector : IOnlineDetector
     public OnlineDetector(IDateTimeProvider dateTimeProvider)
     {
         _dateTimeProvider = dateTimeProvider;
+    }
+
+    public OnlineDetector()
+    {
+        throw new NotImplementedException();
     }
 
     public bool Detect(List<UserTimeSpan> data, DateTimeOffset date)

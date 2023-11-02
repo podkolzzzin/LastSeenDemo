@@ -134,6 +134,8 @@ void Setup4thAssignmentsEndpoints()
     {
         // Initialize a dictionary to store daily averages keyed by user IDs.
         var dailyAverages = new Dictionary<Guid, double>();
+        
+        var weeklyAverages = new Dictionary<Guid, double>(); 
 
         // Iterate over the collection of users.
         foreach (var userId in worker.Users.Keys)
@@ -142,15 +144,16 @@ void Setup4thAssignmentsEndpoints()
             if (worker.Users.TryGetValue(userId, out var user))
             {
                 // Calculate the daily average for the current user.
-                var average = detector.CalculateDailyAverageForUser(user);
-
                 // Add the user's ID and their daily average to the dictionary.
-                dailyAverages.Add(userId, average);
+                var dailyAverage = detector.CalculateDailyAverageForUser(user);
+                dailyAverages.Add(userId, dailyAverage);
+                var weeklyAverage = detector.CalculateWeeklyAverageForUser(user); 
+                weeklyAverages.Add(userId, weeklyAverage);
             }
         }
 
         // Return the daily averages as a JSON response.
-        return Results.Json(dailyAverages);
+        return Results.Json(new { DailyAverages = dailyAverages, WeeklyAverages = weeklyAverages });
     });
 
 }

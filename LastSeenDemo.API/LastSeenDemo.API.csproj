@@ -8,9 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LastSeenDemo\LastSeenDemo.csproj"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+        <PackageReference Include="xunit" Version="2.5.3" />
+        <PackageReference Include="xunit.runner.console" Version="2.5.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="xunit.runners" Version="2.0.0" />
+        <ProjectReference Include="..\LastSeenDemo\LastSeenDemo.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
 </Project>

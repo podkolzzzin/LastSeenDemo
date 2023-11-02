@@ -10,6 +10,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LastSeenDemo.API", "LastSee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LastSeenDemo.E2E", "LastSeenDemo.E2E\LastSeenDemo.E2E.csproj", "{C6725805-AE7D-4652-889D-A15D0CB31ACB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{E4EAE598-1747-4B8D-B0E1-28E1C5834792}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D338F3F9-B265-48B8-BBE4-030C31553454}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy1.yml = .github\workflows\deploy1.yml
+		.github\workflows\Scripts\dotnet1.yml = .github\workflows\Scripts\dotnet1.yml
+		.github\workflows\e2e1.yml = .github\workflows\e2e1.yml
+		.github\workflows\lint1.yml = .github\workflows\lint1.yml
+		.github\workflows\python-app1.yml = .github\workflows\python-app1.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{0BC6B515-D5E1-49F4-9055-E7BE15EDFF99}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\Scripts\extract-coverage.ps2 = .github\workflows\Scripts\extract-coverage.ps2
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +52,9 @@ Global
 		{C6725805-AE7D-4652-889D-A15D0CB31ACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6725805-AE7D-4652-889D-A15D0CB31ACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6725805-AE7D-4652-889D-A15D0CB31ACB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D338F3F9-B265-48B8-BBE4-030C31553454} = {E4EAE598-1747-4B8D-B0E1-28E1C5834792}
+		{0BC6B515-D5E1-49F4-9055-E7BE15EDFF99} = {D338F3F9-B265-48B8-BBE4-030C31553454}
 	EndGlobalSection
 EndGlobal

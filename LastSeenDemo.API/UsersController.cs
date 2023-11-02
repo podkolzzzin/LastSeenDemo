@@ -36,7 +36,7 @@ namespace LastSeenDemo.API.Controllers
             return new List<UserDto>
             {
                 new UserDto { Username = "Doug93", UserId = Guid.NewGuid(), FirstSeen = DateTime.UtcNow },
-                // Add more users as needed
+                
             };
         }
     }

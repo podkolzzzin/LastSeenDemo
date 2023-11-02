@@ -23,7 +23,7 @@ namespace LastSeenDemo.Tests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var users = Assert.IsType<List<UserDto>>(okResult.Value);
-            Assert.Equal(2, users.Count); // Assuming GetTestUsers() returns 2 users
+            Assert.Equal(2, users.Count);
         }
 
         private List<UserDto> GetTestUsers()

@@ -2,14 +2,14 @@ name: Code Format Check
 
 on:
     push:
-        branches: [ "main" ]
+        branches: [ "master" ]
     pull_request:
-        branches: [ "main" ]
+        branches: [ "master" ]
 
 jobs:
     code-format:
         runs-on: ubuntu-latest
-        
+
         steps:
             - name: Check out code
               uses: actions/checkout@v2
@@ -21,3 +21,6 @@ jobs:
 
             - name: Install dotnet-format tool
               run: dotnet tool install -g dotnet-format
+
+            - name: Check Code Formatting
+              run: dotnet format --severity error --verify-no-changes

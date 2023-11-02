@@ -12,8 +12,34 @@ public class Worker
         _transformer = transformer;
         Users = new Dictionary<Guid, List<UserTimeSpan>>();
     }
+    /*
+    public ReportData GenerateReportData(string reportName, DateTimeOffset from, DateTimeOffset to)
+    {
+        var reportData = new ReportData
+        {
+            ReportName = reportName,
+            From = from,
+            To = to,
+            UserSummaries = new Dictionary<Guid, UserActivitySummary>()
+        };
 
-    public Dictionary<Guid, List<UserTimeSpan>> Users { get; }
+        foreach (var (userId, timeSpans) in Users)
+        {
+            var summary = new UserActivitySummary
+            {
+                TotalSessions = timeSpans.Count(ts => ts.Start >= from && ts.End <= to),
+                TotalDuration = timeSpans.Where(ts => ts.Start >= from && ts.End <= to)
+                    .Aggregate(TimeSpan.Zero, (sum, next) => sum + (next.End - next.Start))
+            };
+            
+            reportData.UserSummaries[userId] = summary;
+        }
+
+        return reportData;
+    }
+    */
+
+    public Dictionary<Guid, List<UserTimeSpan>> Users { get; set; }
     public List<Guid> OnlineUsers { get; } = new();
 
     public void LoadDataPeriodically()

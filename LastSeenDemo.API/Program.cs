@@ -126,7 +126,86 @@ void Setup4thAssignmentsEndpoints()
         worker.Forget(userId);
         return Results.Ok();
     });
+
+    // Defines an HTTP GET endpoint at the specified route ("/api/stats/user/reports").
+    // When this endpoint is hit, the enclosed lambda function is executed.
+    app.MapGet("/api/stats/user/reports", () =>
+    {
+        // A dictionary to hold the daily average values for each user, 
+        // with the user's Guid as the key and the average as the value.
+        var dailyAverages = new Dictionary<Guid, double>();
+
+        // Similar to the dailyAverages dictionary, this holds weekly average values for each user.
+        var weeklyAverages = new Dictionary<Guid, double>();
+
+        // Iterates over each userId found in the 'Users' dictionary of the 'worker' object.
+        foreach (var userId in worker.Users.Keys)
+        {
+            // Tries to retrieve the user details from the 'Users' dictionary using the userId.
+            // If the user is found, 'user' is set with the user's details, and the block executes.
+            if (worker.Users.TryGetValue(userId, out var user))
+            {
+                // Calculates the daily average for the current user by invoking a method 
+                // on the 'detector' object and stores the result in the dailyAverages dictionary.
+                var dailyAverage = detector.CalculateDailyAverageForUser(user);
+                dailyAverages.Add(userId, dailyAverage);
+
+                // Similarly, calculates the weekly average for the user and stores it in the weeklyAverages dictionary.
+                var weeklyAverage = detector.CalculateWeeklyAverageForUser(user);
+                weeklyAverages.Add(userId, weeklyAverage);
+            }
+        }
+
+        // Calculates the overall average weekly average across all users. 
+        // This represents an aggregation over the entire dataset.
+        var averageWeeklyAverage = detector.CalculateAverageWeeklyAverageForAllUsers(worker.Users);
+
+        // Constructs a response in JSON format containing the daily and weekly averages per user,
+        // and the overall average weekly average, then returns this JSON as the API response.
+        return Results.Json(new { DailyAverages = dailyAverages, WeeklyAverages = weeklyAverages, AverageWeeklyAverage = averageWeeklyAverage });
+    });
+    
+    // Define the endpoint for "/api/users/list"
+    app.MapGet("/api/users/list", () =>
+    {
+        // Extracting and transforming user data
+        var usersList = worker.Users.Select(userEntry => new
+        {
+            username = userEntry.Key.ToString(),
+            userId = userEntry.Key,
+            firstSeen = userEntry.Value.FirstOrDefault()?.Login.ToString("o") // ISO 8601 format
+        }).ToList();
+
+        return Results.Json(usersList);
+    });
 }
 
-
+/*
 // ssh -i deploy_key root@lastseendemo.top
+
+/// <summary>
+/// Sets up the endpoints for the 7th Assignment, including the endpoint for fetching report data.
+/// </summary>
+void Setup7thAssignmentEndpoints()
+{
+    app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
+    {
+        // Generate the report data based on the report name and the specified date range.
+        var reportData = worker.GenerateReportData(reportName, from, to);
+
+        // Calculate global metrics across all users.
+        var globalMetrics = allUsersTransformer.CalculateGlobalMetrics();
+
+        // Construct the response object.
+        var response = new
+        {
+            Users = reportData,
+            DailyAverage = globalMetrics.DailyAverage,
+        };
+
+        // Return the response in JSON format.
+        return Results.Json(response);
+    });
+}
+
+*/

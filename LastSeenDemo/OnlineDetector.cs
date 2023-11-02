@@ -138,6 +138,16 @@ public class OnlineDetector : IOnlineDetector
 
         return totalTime / totalDays;
     }
+
+    public double CalculateAverageWeeklyAverageForAllUsers(Dictionary<Guid, List<UserTimeSpan>> users) 
+    {
+        double totalWeeklyAverage = 0;
+        foreach (var user in users.Values)
+        {
+            totalWeeklyAverage += CalculateWeeklyAverageForUser(user);
+        }
+        return totalWeeklyAverage / users.Count;
+    }
 }
 
 public class Predictor

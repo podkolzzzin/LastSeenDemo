@@ -8,3 +8,19 @@ var result = application.Show(DateTimeOffset.Now);
 
 foreach (var item in result)
     Console.WriteLine(item);
+
+
+/*
+my password
+LVPtPJgr_01b
+https://github.com/Zakhar-Khmurych/LastSeenDemoAssignments.git
+dotnet run -urls=http://[::]/
+maybe anonymous messenger chat? spme mind game
+sebassignmentstaskdomain
+dotnet run --urls=http://[::]/
+
+167.172.189.115 my IP
+
+my password
+*/
+

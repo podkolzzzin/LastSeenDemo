@@ -39,7 +39,7 @@ public class Worker
     }
     */
 
-    public Dictionary<Guid, List<UserTimeSpan>> Users { get; }
+    public Dictionary<Guid, List<UserTimeSpan>> Users { get; set; }
     public List<Guid> OnlineUsers { get; } = new();
 
     public void LoadDataPeriodically()

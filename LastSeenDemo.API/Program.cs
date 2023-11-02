@@ -164,8 +164,7 @@ void SetupReportsEndpoints(object reportRequest1)
         new Guid("cbf0d80b-8532-070b-0df6-a0279e65d0b2"),
         new Guid("de5b8815-1689-7c78-44e1-33375e7e2931")
     };
-    
-   app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
+    app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
 {
     var userReports = new List<object>();
     var globalDailyAverages = new List<double>();
@@ -173,7 +172,6 @@ void SetupReportsEndpoints(object reportRequest1)
     var globalTotals = new List<double>();
     var globalMins = new List<double>();
     var globalMaxs = new List<double>();
-
     foreach (var userId in userGuids)
     {
         if (worker.Users.TryGetValue(userId, out var user))
@@ -195,7 +193,6 @@ void SetupReportsEndpoints(object reportRequest1)
                     new { max = minMax.Item2 }
                 }
             });
-
             globalDailyAverages.Add(dailyAverage);
             globalWeeklyAverages.Add(weeklyAverage);
             globalTotals.Add(total);
@@ -203,8 +200,6 @@ void SetupReportsEndpoints(object reportRequest1)
             globalMaxs.Add(minMax.Item2);
         }
     }
-
-    
     var globalMetrics = new
     {
         dailyAverage = globalDailyAverages.Any() ? globalDailyAverages.Average() : 0,
@@ -224,4 +219,14 @@ void SetupReportsEndpoints(object reportRequest1)
     return Results.Json(reportResponse);
 });
 
+
+
+    void FinalSetUpEndpoints()
+    {
+        
+    }
+    
+    
+    
+    
 }

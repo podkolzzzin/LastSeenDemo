@@ -13,6 +13,7 @@ public class Worker
         Users = new Dictionary<Guid, List<UserTimeSpan>>();
     }
 
+
     public Dictionary<Guid, List<UserTimeSpan>> Users { get; }
     public List<Guid> OnlineUsers { get; } = new();
 

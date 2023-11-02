@@ -19,6 +19,11 @@ public class OnlineDetector : IOnlineDetector
         _dateTimeProvider = dateTimeProvider;
     }
 
+    public OnlineDetector()
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Detect(List<UserTimeSpan> data, DateTimeOffset date)
     {
         foreach (var interval in data)

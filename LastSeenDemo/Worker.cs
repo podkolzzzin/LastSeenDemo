@@ -12,7 +12,7 @@ public class Worker
         _transformer = transformer;
         Users = new Dictionary<Guid, List<UserTimeSpan>>();
     }
-    
+    /*
     public ReportData GenerateReportData(string reportName, DateTimeOffset from, DateTimeOffset to)
     {
         var reportData = new ReportData
@@ -37,6 +37,7 @@ public class Worker
 
         return reportData;
     }
+    */
 
     public Dictionary<Guid, List<UserTimeSpan>> Users { get; }
     public List<Guid> OnlineUsers { get; } = new();

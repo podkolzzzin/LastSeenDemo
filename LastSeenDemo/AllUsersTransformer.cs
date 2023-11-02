@@ -7,11 +7,12 @@ public class GlobalMetrics
 public class AllUsersTransformer
 {
     private readonly IUserTransformer _transformer;
-    private readonly IOnlineDetector _detector;
-    public AllUsersTransformer(IUserTransformer transformer, IOnlineDetector detector) 
+    //private readonly IOnlineDetector _detector;
+    //public AllUsersTransformer(IUserTransformer transformer, IOnlineDetector detector) 
+    public AllUsersTransformer(IUserTransformer transformer)
     {
         _transformer = transformer;
-        _detector = detector; 
+        //_detector = detector; 
     }
 
     public void Transform(IEnumerable<User> allUsers, List<Guid> onlineUsers, Dictionary<Guid, List<UserTimeSpan>> result)
@@ -36,7 +37,7 @@ public class AllUsersTransformer
             }
         }
     }
-    
+    /*
     /// <summary>
     /// Calculates the global metrics based on user time spans.
     /// </summary>
@@ -55,4 +56,5 @@ public class AllUsersTransformer
         // Return the calculated global metrics.
         return globalMetrics;
     }
+    */
 }

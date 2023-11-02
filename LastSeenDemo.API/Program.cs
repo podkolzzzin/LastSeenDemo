@@ -9,7 +9,8 @@ var predictor = new Predictor(detector);
 var userLoader = new UserLoader(loader, "https://sef.podkolzin.consulting/api/users/lastSeen");
 var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
-var allUsersTransformer = new AllUsersTransformer(userTransformer, detector);
+//var allUsersTransformer = new AllUsersTransformer(userTransformer, detector);
+var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
 // End Global Application Services
 
@@ -34,7 +35,7 @@ app.MapGet("/version", () => new
 Setup2ndAssignmentsEndpoints();
 Setup3rdAssignmentsEndpoints();
 Setup4thAssignmentsEndpoints();
-Setup7thAssignmentEndpoints();
+//Setup7thAssignmentEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -127,9 +128,34 @@ void Setup4thAssignmentsEndpoints()
         worker.Forget(userId);
         return Results.Ok();
     });
+    
+    // Define a route for getting daily average statistics for each user.
+    app.MapGet("/api/stats/user/reports", () =>
+    {
+        // Initialize a dictionary to store daily averages keyed by user IDs.
+        var dailyAverages = new Dictionary<Guid, double>();
+
+        // Iterate over the collection of users.
+        foreach (var userId in worker.Users.Keys)
+        {
+            // Try to retrieve the user details from the worker's user collection.
+            if (worker.Users.TryGetValue(userId, out var user))
+            {
+                // Calculate the daily average for the current user.
+                var average = detector.CalculateDailyAverageForUser(user);
+
+                // Add the user's ID and their daily average to the dictionary.
+                dailyAverages.Add(userId, average);
+            }
+        }
+
+        // Return the daily averages as a JSON response.
+        return Results.Json(dailyAverages);
+    });
+
 }
 
-
+/*
 // ssh -i deploy_key root@lastseendemo.top
 
 /// <summary>
@@ -157,3 +183,4 @@ void Setup7thAssignmentEndpoints()
     });
 }
 
+*/

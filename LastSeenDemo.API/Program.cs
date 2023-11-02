@@ -27,7 +27,8 @@ app.MapGet("/", () => "Hello World!"); // Just Demo Endpoint
 app.MapGet("/version", () => new
 {
     Version = 1,
-    Assembly = Assembly.GetAssembly(typeof(Program)).Location,
+    Assembly = Assembly.GetAssembly(typeof(Program)).Location, //<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
     Modified = File.GetLastWriteTime(Assembly.GetAssembly(typeof(Program)).Location)
 });
 

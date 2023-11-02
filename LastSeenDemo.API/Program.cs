@@ -164,6 +164,20 @@ void Setup4thAssignmentsEndpoints()
         // and the overall average weekly average, then returns this JSON as the API response.
         return Results.Json(new { DailyAverages = dailyAverages, WeeklyAverages = weeklyAverages, AverageWeeklyAverage = averageWeeklyAverage });
     });
+    
+    // Define the endpoint for "/api/users/list"
+    app.MapGet("/api/users/list", () =>
+    {
+        // Extracting and transforming user data
+        var usersList = worker.Users.Select(userEntry => new
+        {
+            username = userEntry.Key.ToString(),
+            userId = userEntry.Key,
+            firstSeen = userEntry.Value.FirstOrDefault()?.Login.ToString("o") // ISO 8601 format
+        }).ToList();
+
+        return Results.Json(usersList);
+    });
 }
 
 /*

@@ -9,7 +9,7 @@ var predictor = new Predictor(detector);
 var userLoader = new UserLoader(loader, "https://sef.podkolzin.consulting/api/users/lastSeen");
 var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
-var allUsersTransformer = new AllUsersTransformer(userTransformer);
+var allUsersTransformer = new AllUsersTransformer(userTransformer, detector);
 var worker = new Worker(userLoader, allUsersTransformer);
 // End Global Application Services
 
@@ -34,6 +34,7 @@ app.MapGet("/version", () => new
 Setup2ndAssignmentsEndpoints();
 Setup3rdAssignmentsEndpoints();
 Setup4thAssignmentsEndpoints();
+Setup7thAssignmentEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -130,3 +131,29 @@ void Setup4thAssignmentsEndpoints()
 
 
 // ssh -i deploy_key root@lastseendemo.top
+
+/// <summary>
+/// Sets up the endpoints for the 7th Assignment, including the endpoint for fetching report data.
+/// </summary>
+void Setup7thAssignmentEndpoints()
+{
+    app.MapGet("/api/report/{reportName}", (string reportName, DateTimeOffset from, DateTimeOffset to) =>
+    {
+        // Generate the report data based on the report name and the specified date range.
+        var reportData = worker.GenerateReportData(reportName, from, to);
+
+        // Calculate global metrics across all users.
+        var globalMetrics = allUsersTransformer.CalculateGlobalMetrics();
+
+        // Construct the response object.
+        var response = new
+        {
+            Users = reportData,
+            DailyAverage = globalMetrics.DailyAverage,
+        };
+
+        // Return the response in JSON format.
+        return Results.Json(response);
+    });
+}
+

@@ -9,7 +9,6 @@ var predictor = new Predictor(detector);
 var userLoader = new UserLoader(loader, "https://sef.podkolzin.consulting/api/users/lastSeen");
 var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
-//var allUsersTransformer = new AllUsersTransformer(userTransformer, detector);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
 var worker = new Worker(userLoader, allUsersTransformer);
 // End Global Application Services
@@ -35,7 +34,6 @@ app.MapGet("/version", () => new
 Setup2ndAssignmentsEndpoints();
 Setup3rdAssignmentsEndpoints();
 Setup4thAssignmentsEndpoints();
-//Setup7thAssignmentEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -128,34 +126,44 @@ void Setup4thAssignmentsEndpoints()
         worker.Forget(userId);
         return Results.Ok();
     });
-    
-    // Define a route for getting daily average statistics for each user.
+
+    // Defines an HTTP GET endpoint at the specified route ("/api/stats/user/reports").
+    // When this endpoint is hit, the enclosed lambda function is executed.
     app.MapGet("/api/stats/user/reports", () =>
     {
-        // Initialize a dictionary to store daily averages keyed by user IDs.
+        // A dictionary to hold the daily average values for each user, 
+        // with the user's Guid as the key and the average as the value.
         var dailyAverages = new Dictionary<Guid, double>();
-        
-        var weeklyAverages = new Dictionary<Guid, double>(); 
 
-        // Iterate over the collection of users.
+        // Similar to the dailyAverages dictionary, this holds weekly average values for each user.
+        var weeklyAverages = new Dictionary<Guid, double>();
+
+        // Iterates over each userId found in the 'Users' dictionary of the 'worker' object.
         foreach (var userId in worker.Users.Keys)
         {
-            // Try to retrieve the user details from the worker's user collection.
+            // Tries to retrieve the user details from the 'Users' dictionary using the userId.
+            // If the user is found, 'user' is set with the user's details, and the block executes.
             if (worker.Users.TryGetValue(userId, out var user))
             {
-                // Calculate the daily average for the current user.
-                // Add the user's ID and their daily average to the dictionary.
+                // Calculates the daily average for the current user by invoking a method 
+                // on the 'detector' object and stores the result in the dailyAverages dictionary.
                 var dailyAverage = detector.CalculateDailyAverageForUser(user);
                 dailyAverages.Add(userId, dailyAverage);
-                var weeklyAverage = detector.CalculateWeeklyAverageForUser(user); 
+
+                // Similarly, calculates the weekly average for the user and stores it in the weeklyAverages dictionary.
+                var weeklyAverage = detector.CalculateWeeklyAverageForUser(user);
                 weeklyAverages.Add(userId, weeklyAverage);
             }
         }
 
-        // Return the daily averages as a JSON response.
-        return Results.Json(new { DailyAverages = dailyAverages, WeeklyAverages = weeklyAverages });
-    });
+        // Calculates the overall average weekly average across all users. 
+        // This represents an aggregation over the entire dataset.
+        var averageWeeklyAverage = detector.CalculateAverageWeeklyAverageForAllUsers(worker.Users);
 
+        // Constructs a response in JSON format containing the daily and weekly averages per user,
+        // and the overall average weekly average, then returns this JSON as the API response.
+        return Results.Json(new { DailyAverages = dailyAverages, WeeklyAverages = weeklyAverages, AverageWeeklyAverage = averageWeeklyAverage });
+    });
 }
 
 /*

@@ -9,7 +9,6 @@ public interface IOnlineDetector
     double CalculateTotalTimeForUser(List<UserTimeSpan> value, DateTimeOffset from, DateTimeOffset to);
     double CalculateDailyAverageForUser(List<UserTimeSpan> user);
     double CalculateWeeklyAverageForUser(List<UserTimeSpan> user);
-    int CalculateGlobalDailyAverageForAllUsers(Dictionary<Guid, List<UserTimeSpan>> userTimeSpans);
 }
 
 public class OnlineDetector : IOnlineDetector
@@ -139,29 +138,15 @@ public class OnlineDetector : IOnlineDetector
 
         return totalTime / totalDays;
     }
-    
-    /// <summary>
-    /// Calculates the global daily average time for all users.
-    /// </summary>
-    /// <param name="userTimeSpans">Dictionary containing user IDs and their corresponding lists of time spans.</param>
-    /// <returns>The global daily average time as an integer.</returns>
-    public int CalculateGlobalDailyAverageForAllUsers(Dictionary<Guid, List<UserTimeSpan>> userTimeSpans)
+
+    public double CalculateAverageWeeklyAverageForAllUsers(Dictionary<Guid, List<UserTimeSpan>> users) 
     {
-        // Initialize a variable to accumulate the total daily average across all users.
-        double totalDailyAverage = 0;
-
-        // Iterate over each user's time spans in the dictionary.
-        foreach (var user in userTimeSpans.Values)
+        double totalWeeklyAverage = 0;
+        foreach (var user in users.Values)
         {
-            // Add the calculated daily average for each user to the total.
-            totalDailyAverage += CalculateDailyAverageForUser(user);
+            totalWeeklyAverage += CalculateWeeklyAverageForUser(user);
         }
-
-        // Calculate the global daily average by rounding the total daily average.
-        // This converts it to an integer for a consistent and simplified data type.
-        int globalDailyAverage = (int)Math.Round(totalDailyAverage);
-
-        return globalDailyAverage;
+        return totalWeeklyAverage / users.Count;
     }
 }
 

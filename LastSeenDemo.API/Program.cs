@@ -4,15 +4,15 @@ using LastSeenDemo;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure your services here
-builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>(); 
-builder.Services.AddScoped<ILoader, Loader>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>(); 
+builder.Services.AddTransient<ILoader, Loader>();
 builder.Services.AddScoped<IOnlineDetector, OnlineDetector>();
 builder.Services.AddScoped<IPredictor, Predictor>(); // Scoped to match the lifecycle of IOnlineDetector
 builder.Services.AddScoped<IUserLoader, UserLoader>(serviceProvider =>
 {
     // Replace the string with the actual URL or configuration value required by UserLoader
     string apiUrl = "https://sef.podkolzin.consulting/api/users/lastSeen";
-    return new UserLoader(new Loader(), apiUrl);
+    return new UserLoader(serviceProvider.GetRequiredService<ILoader>(), apiUrl);
 });
 builder.Services.AddScoped<ILastSeenApplication, LastSeenApplication>(); 
 builder.Services.AddScoped<IUserTransformer, UserTransformer>();

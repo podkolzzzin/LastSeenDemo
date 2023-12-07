@@ -1,9 +1,9 @@
 ﻿namespace LastSeenDemo;
 
-public class LastSeenApplication
+public class LastSeenApplication : ILastSeenApplication
 {
-    private readonly UserLoader _userLoader;
-    public LastSeenApplication(UserLoader userLoader)
+    private readonly IUserLoader _userLoader;
+    public LastSeenApplication(IUserLoader userLoader)
     {
         _userLoader = userLoader;
     }

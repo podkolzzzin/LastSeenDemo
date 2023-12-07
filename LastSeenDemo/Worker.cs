@@ -1,12 +1,12 @@
 ﻿namespace LastSeenDemo;
 
-public class Worker
+public class Worker : IWorker
 {
-    private readonly UserLoader _loader;
-    private readonly AllUsersTransformer _transformer;
+    private readonly IUserLoader _loader;
+    private readonly IAllUsersTransformer _transformer;
     private readonly List<Guid> _forgottenUsers = new();
 
-    public Worker(UserLoader loader, AllUsersTransformer transformer)
+    public Worker(IUserLoader loader, IAllUsersTransformer transformer)
     {
         _loader = loader;
         _transformer = transformer;

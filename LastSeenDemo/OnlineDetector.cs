@@ -140,7 +140,13 @@ public class OnlineDetector : IOnlineDetector
     }
 }
 
-public class Predictor
+public interface IPredictor
+{
+    int PredictUsersOnline(Dictionary<Guid, List<UserTimeSpan>> allData, DateTimeOffset offset);
+    double PredictUserOnline(List<UserTimeSpan> allData, DateTimeOffset offset);
+}
+
+public class Predictor: IPredictor
 {
     private readonly IOnlineDetector _detector;
     public Predictor(IOnlineDetector detector)

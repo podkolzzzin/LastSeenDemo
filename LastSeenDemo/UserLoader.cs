@@ -1,6 +1,6 @@
 using LastSeenDemo;
 
-public class UserLoader
+public class UserLoader: IUserLoader
 {
     private readonly ILoader _loader;
     private readonly string _rootUrl;

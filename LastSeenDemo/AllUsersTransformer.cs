@@ -1,6 +1,6 @@
 namespace LastSeenDemo;
 
-public class AllUsersTransformer
+public class AllUsersTransformer: IAllUsersTransformer
 {
     private readonly IUserTransformer _transformer;
     public AllUsersTransformer(IUserTransformer transformer)

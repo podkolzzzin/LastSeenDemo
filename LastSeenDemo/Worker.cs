@@ -1,6 +1,6 @@
 ﻿namespace LastSeenDemo;
 
-public class Worker
+public class Worker: IWorker
 {
     private readonly UserLoader _loader;
     private readonly AllUsersTransformer _transformer;

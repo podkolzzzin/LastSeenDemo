@@ -1,5 +1,13 @@
 using LastSeenDemo;
 
+public interface IPredictor
+{
+    int PredictUsersOnline(Dictionary<Guid, List<UserTimeSpan>> allData, DateTimeOffset offset);
+    double PredictUserOnline(List<UserTimeSpan> allData, DateTimeOffset offset);
+}
+
+
+
 public interface IOnlineDetector
 {
     bool Detect(List<UserTimeSpan> data, DateTimeOffset date);
@@ -140,9 +148,10 @@ public class OnlineDetector : IOnlineDetector
     }
 }
 
-public class Predictor
+public class Predictor : IPredictor
 {
     private readonly IOnlineDetector _detector;
+
     public Predictor(IOnlineDetector detector)
     {
         _detector = detector;
@@ -169,8 +178,7 @@ public class Predictor
             return 0;
         }
         var firstLogin = allData.Min(x => x.Login);
-        int totalCount = 0,
-          wasOnlineCount = 0;
+        int totalCount = 0, wasOnlineCount = 0;
         while (offset > firstLogin)
         {
             var wasOnline = _detector.Detect(allData, offset);
@@ -189,3 +197,4 @@ public class Predictor
         return (double)wasOnlineCount / totalCount;
     }
 }
+

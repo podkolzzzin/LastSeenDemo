@@ -1,20 +1,30 @@
 ﻿namespace LastSeenDemo;
 
-public class Worker
+public interface IWorker
 {
-    private readonly UserLoader _loader;
-    private readonly AllUsersTransformer _transformer;
+    Dictionary<Guid, List<UserTimeSpan>> Users { get; }
+    List<Guid> OnlineUsers { get; }
+
+    void LoadDataPeriodically();
+    void LoadDataIteration();
+    void Forget(Guid userId);
+}
+
+public class Worker : IWorker
+{
+    private readonly IUserLoader _loader;
+    private readonly IAllUsersTransformer _transformer;
     private readonly List<Guid> _forgottenUsers = new();
 
-    public Worker(UserLoader loader, AllUsersTransformer transformer)
+    public Worker(IUserLoader loader, IAllUsersTransformer transformer)
     {
         _loader = loader;
         _transformer = transformer;
         Users = new Dictionary<Guid, List<UserTimeSpan>>();
     }
 
-    public Dictionary<Guid, List<UserTimeSpan>> Users { get; }
-    public List<Guid> OnlineUsers { get; } = new();
+    public Dictionary<Guid, List<UserTimeSpan>> Users { get; private set; }
+    public List<Guid> OnlineUsers { get; private set; } = new();
 
     public void LoadDataPeriodically()
     {

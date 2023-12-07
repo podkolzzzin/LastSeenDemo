@@ -1,24 +1,30 @@
-﻿namespace LastSeenDemo;
-
-public class LastSeenApplication
+﻿namespace LastSeenDemo
 {
-    private readonly UserLoader _userLoader;
-    public LastSeenApplication(UserLoader userLoader)
+    public interface ILastSeenApplication
     {
-        _userLoader = userLoader;
+        List<string> Show(DateTimeOffset now);
     }
 
-
-    public List<string> Show(DateTimeOffset now)
+    public class LastSeenApplication : ILastSeenApplication
     {
-        var users = _userLoader.LoadAllUsers();
-        var format = new LastSeenFormatter();
+        private readonly IUserLoader _userLoader; // Use IUserLoader interface
 
-        var result = new List<string>();
-        foreach (var u in users)
+        public LastSeenApplication(IUserLoader userLoader)
         {
-            result.Add($"{u.Nickname} {format.Format(now, u.LastSeenDate ?? now)}");
+            _userLoader = userLoader;
         }
-        return result;
+
+        public List<string> Show(DateTimeOffset now)
+        {
+            var users = _userLoader.LoadAllUsers();
+            var format = new LastSeenFormatter();
+
+            var result = new List<string>();
+            foreach (var u in users)
+            {
+                result.Add($"{u.Nickname} {format.Format(now, u.LastSeenDate ?? now)}");
+            }
+            return result;
+        }
     }
 }

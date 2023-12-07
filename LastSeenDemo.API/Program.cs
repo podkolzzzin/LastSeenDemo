@@ -1,28 +1,34 @@
 using System.Reflection;
 using LastSeenDemo;
 
-// Global Application Services
-var dateTimeProvider = new DateTimeProvider();
-var loader = new Loader();
-var detector = new OnlineDetector(dateTimeProvider);
-var predictor = new Predictor(detector);
-var userLoader = new UserLoader(loader, "https://sef.podkolzin.consulting/api/users/lastSeen");
-var application = new LastSeenApplication(userLoader);
-var userTransformer = new UserTransformer(dateTimeProvider);
-var allUsersTransformer = new AllUsersTransformer(userTransformer);
-var worker = new Worker(userLoader, allUsersTransformer);
-// End Global Application Services
-
-Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Global Application Services
 
 
-// APIs
+
+// Dependency Injection Setup
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddSingleton<ILoader, Loader>();
+builder.Services.AddScoped<IOnlineDetector, OnlineDetector>();
+builder.Services.AddTransient<IPredictor, Predictor>();
+
+// Register UserLoader as IUserLoader implementation
+builder.Services.AddTransient<UserLoader>(); // Add this line
+
+builder.Services.AddTransient<IAllUsersTransformer, AllUsersTransformer>();
+builder.Services.AddSingleton<IWorker, Worker>();
+
+
+
+// End Dependency Injection Setup
+
 var app = builder.Build();
 
+// Application Initialization
+app.Services.GetRequiredService<IWorker>().LoadDataPeriodically();
+
+// Setup APIs
 app.MapGet("/", () => "Hello!"); // Just Demo Endpoint
 app.MapGet("/version", () => new
 {
@@ -31,36 +37,29 @@ app.MapGet("/version", () => new
     Modified = File.GetLastWriteTime(Assembly.GetAssembly(typeof(Program)).Location)
 });
 
-Setup2ndAssignmentsEndpoints();
-Setup3rdAssignmentsEndpoints();
-Setup4thAssignmentsEndpoints();
-
+Setup2ndAssignmentsEndpoints(app);
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
 
-
-void Setup2ndAssignmentsEndpoints()
+void Setup2ndAssignmentsEndpoints(WebApplication app)
 {
-    app.MapGet("/formatted", () => application.Show(DateTimeOffset.Now)); // Assignment#2 in API form
+    app.MapGet("/formatted", (IUserLoader userLoader, ILastSeenApplication application) => 
+        application.Show(DateTimeOffset.Now)); // Assignment#2 in API form
 }
 
-void Setup3rdAssignmentsEndpoints()
+void Setup3rdAssignmentsEndpoints(WebApplication app)
 {
-    // Feature#1 - Implement endpoint that returns historical data for all users
+    var detector = app.Services.GetRequiredService<IOnlineDetector>(); // Add this line
+    var worker = app.Services.GetRequiredService<IWorker>(); // Add this line
+    var predictor = app.Services.GetRequiredService<IPredictor>(); // Add this line
+
+    // Feature#1 - Implement an endpoint that returns historical data for all users
     app.MapGet("/api/stats/users/", (DateTimeOffset date) =>
     {
-        // int usersOnline = 0;
-        // foreach (var (_, user) in users)
-        // {
-        //   if (detector.Detect(user, date))
-        //   {
-        //     usersOnline++;
-        //   }
-        // }
-        // return new { usersOnline };
-        return new { usersOnline = detector.CountOnline(worker.Users, date) };
+        int usersOnline = detector.CountOnline(worker.Users, date);
+        return Results.Json(new { usersOnline });
     });
 
     // Feature#2 - Implement endpoint that returns historical data for a concrete user
@@ -82,7 +81,7 @@ void Setup3rdAssignmentsEndpoints()
         return new { onlineUsers = predictor.PredictUsersOnline(worker.Users, date) };
     });
 
-    // Feature#4 - Implement a prediction mechanism based on a historical data for concrete user
+    // Feature#4 - Implement a prediction mechanism based on historical data for a concrete user
     app.MapGet("/api/predictions/user", (Guid userId, DateTimeOffset date, float tolerance) =>
     {
         if (!worker.Users.TryGetValue(userId, out var user))
@@ -96,8 +95,11 @@ void Setup3rdAssignmentsEndpoints()
     });
 }
 
-void Setup4thAssignmentsEndpoints()
+void Setup4thAssignmentsEndpoints(WebApplication app)
 {
+    var detector = app.Services.GetRequiredService<IOnlineDetector>(); // Add this line
+    var worker = app.Services.GetRequiredService<IWorker>(); // Add this line
+
     // Feature#1 - Implement an endpoint that returns total time that user was online
     app.MapGet("/api/stats/user/total", (Guid userId) =>
     {
@@ -106,7 +108,7 @@ void Setup4thAssignmentsEndpoints()
         return Results.Json(new { totalTime = detector.CalculateTotalTimeForUser(user) });
     });
 
-    // Feature#2 - Implement endpoints that returns average daily/weekly time for the specified user
+    // Feature#2 - Implement endpoints that return average daily/weekly time for the specified user
     app.MapGet("/api/stats/user/average", (Guid userId) =>
     {
         if (!worker.Users.TryGetValue(userId, out var user))
@@ -118,7 +120,7 @@ void Setup4thAssignmentsEndpoints()
         });
     });
 
-    // Feature#3 - Implement endpoint to follow the EU regulator rules - GDPR - right to be forgotten
+    // Feature#3 - Implement an endpoint to follow the EU regulator rules - GDPR - right to be forgotten
     app.MapPost("/api/user/forget", (Guid userId) =>
     {
         if (!worker.Users.ContainsKey(userId))
@@ -128,5 +130,3 @@ void Setup4thAssignmentsEndpoints()
     });
 }
 
-
-// ssh -i deploy_key root@lastseendemo.top

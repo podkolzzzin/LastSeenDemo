@@ -1,8 +1,9 @@
+using System.Collections.Immutable;
 using System.Reflection;
 using LastSeenDemo;
 
 // Global Application Services
-var dateTimeProvider = new DateTimeProvider();
+/*var dateTimeProvider = new DateTimeProvider();
 var loader = new Loader();
 var detector = new OnlineDetector(dateTimeProvider);
 var predictor = new Predictor(detector);
@@ -10,15 +11,39 @@ var userLoader = new UserLoader(loader, "https://sef.podkolzin.consulting/api/us
 var application = new LastSeenApplication(userLoader);
 var userTransformer = new UserTransformer(dateTimeProvider);
 var allUsersTransformer = new AllUsersTransformer(userTransformer);
-var worker = new Worker(userLoader, allUsersTransformer);
+var worker = new Worker(userLoader, allUsersTransformer);*/
 // End Global Application Services
 
-Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
+// Task.Run(worker.LoadDataPeriodically); // Launch collecting data in background
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddSingleton<ILoader, Loader>();
+builder.Services.AddScoped<IOnlineDetector, OnlineDetector>();
+builder.Services.AddTransient<Predictor>();
+builder.Services.AddTransient<UserLoader>();
+builder.Services.AddTransient<IUserTransformer, UserTransformer>();
+builder.Services.AddTransient<AllUsersTransformer>();
+builder.Services.AddSingleton<Worker>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//test if works??
+var serviceProvider = builder.Services.BuildServiceProvider();
+var worker = serviceProvider.GetService<Worker>();
+Task.Run(() => worker?.LoadDataPeriodically());
+Task.Run(worker.LoadDataPeriodically);
+
+var userLoader = serviceProvider.GetService<UserLoader>();
+
+
+var application = new LastSeenApplication(userLoader);
+
+var detector = serviceProvider.GetService<OnlineDetector>();
+var predictor = serviceProvider.GetService<Predictor>();
 
 // APIs
 var app = builder.Build();

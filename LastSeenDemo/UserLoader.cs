@@ -7,7 +7,7 @@ public class UserLoader
     public UserLoader(ILoader loader, string rootUrl)
     {
         _loader = loader;
-        _rootUrl = rootUrl;
+        _rootUrl = "https://sef.podkolzin.consulting/api/users/lastSeen";
     }
 
     public User[] LoadAllUsers()

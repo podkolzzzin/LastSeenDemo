@@ -1,7 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http;
+using System.Text.Json;
 
 namespace LastSeenDemo;
-
 
 public class Page
 {
@@ -24,13 +24,19 @@ public interface ILoader
 
 public class Loader : ILoader
 {
+    private readonly HttpClient _client;
+
+    public Loader(HttpClient client)
+    {
+        _client = client;
+    }
+
     public Page Load(string url)
     {
-        using var client = new HttpClient();
-        using var result = client.Send(new HttpRequestMessage(HttpMethod.Get, url));
-        using var reader = new StreamReader(result.Content.ReadAsStream());
+        var response = _client.Send(new HttpRequestMessage(HttpMethod.Get, url));
+        using var reader = new StreamReader(response.Content.ReadAsStream());
         var stringContent = reader.ReadToEnd();
-        return JsonSerializer.Deserialize<Page>(stringContent, new JsonSerializerOptions()
+        return JsonSerializer.Deserialize<Page>(stringContent, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
         })!;

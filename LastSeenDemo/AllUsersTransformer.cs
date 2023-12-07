@@ -1,8 +1,14 @@
 namespace LastSeenDemo;
 
-public class AllUsersTransformer
+public interface IAllUsersTransformer
+{
+    void Transform(IEnumerable<User> allUsers, List<Guid> onlineUsers, Dictionary<Guid, List<UserTimeSpan>> result);
+}
+
+public class AllUsersTransformer : IAllUsersTransformer
 {
     private readonly IUserTransformer _transformer;
+
     public AllUsersTransformer(IUserTransformer transformer)
     {
         _transformer = transformer;

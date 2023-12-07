@@ -1,13 +1,19 @@
-using LastSeenDemo;
+namespace LastSeenDemo;
 
-public class UserLoader
+public interface IUserLoader
+{
+    User[] LoadAllUsers();
+}
+
+public class UserLoader : IUserLoader
 {
     private readonly ILoader _loader;
     private readonly string _rootUrl;
+
     public UserLoader(ILoader loader, string rootUrl)
     {
         _loader = loader;
-        _rootUrl = rootUrl;
+        _rootUrl = "https://sef.podkolzin.consulting/api/users/lastSeen";
     }
 
     public User[] LoadAllUsers()
@@ -25,3 +31,4 @@ public class UserLoader
         return users.ToArray();
     }
 }
+

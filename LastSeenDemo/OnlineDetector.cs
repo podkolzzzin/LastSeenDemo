@@ -140,7 +140,7 @@ public class OnlineDetector : IOnlineDetector
     }
 }
 
-public class Predictor
+public class Predictor : IPredictor
 {
     private readonly IOnlineDetector _detector;
     public Predictor(IOnlineDetector detector)
